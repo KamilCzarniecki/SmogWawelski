@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SmogWawelski</string>
+    <string name="PM10">PM10</string>
+    <string name="PM25">PM2.5</string>
+    <string name="PM1">PM1</string>
+
 </resources>
