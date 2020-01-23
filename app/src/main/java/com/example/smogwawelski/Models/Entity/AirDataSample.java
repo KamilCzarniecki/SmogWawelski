@@ -1,11 +1,28 @@
-package com.example.smogwawelski.Models.POJO;
+package com.example.smogwawelski.Models.Entity;
 
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
+
+import com.example.smogwawelski.Models.POJO.Index;
+import com.example.smogwawelski.Models.POJO.Standard;
+import com.example.smogwawelski.Models.POJO.Value;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
-public class AirInfoSample {
 
+@Entity(tableName = "Air_data")
+public class AirDataSample {
+    @Ignore
+    public static final boolean TYPE_CURRENT = true;
+    @Ignore
+    public static final boolean TYPE_HISTORY = false;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     @SerializedName("fromDateTime")
     @Expose
     private String fromDateTime;
@@ -14,13 +31,26 @@ public class AirInfoSample {
     private String tillDateTime;
     @SerializedName("values")
     @Expose
-    private List<Value> values = null;
+    @TypeConverters(ValueTypeConverter.class)
+    private List<Value> values ;
     @SerializedName("indexes")
     @Expose
-    private List<Index> indexes = null;
+    @TypeConverters(IndexTypeConverter.class)
+    private List<Index> indexes ;
     @SerializedName("standards")
     @Expose
-    private List<Standard> standards = null;
+    @TypeConverters(StandardTypeConverter.class)
+    private List<Standard> standards;
+
+    private boolean type = false;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getFromDateTime() {
         return fromDateTime;
@@ -60,6 +90,14 @@ public class AirInfoSample {
 
     public void setStandards(List<Standard> standards) {
         this.standards = standards;
+    }
+
+    public boolean isType() {
+        return type;
+    }
+
+    public void setType(boolean type) {
+        this.type = type;
     }
 
 }
