@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.smogwawelski.Models.Entity.AirDataSample;
+import com.example.smogwawelski.Models.POJO.Installation.Address;
 import com.example.smogwawelski.Models.POJO.Measurements.Standard;
 import com.example.smogwawelski.Models.POJO.Measurements.Value;
 import com.example.smogwawelski.R;
@@ -20,6 +21,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     TextView dateTextView;
+    TextView installationInfoTextView;
     private ViewModel airViewModel;
     RetrofitAPI retrofitAPI;
     TextView PM10TextView;
@@ -35,8 +37,14 @@ public class MainActivity extends AppCompatActivity {
         PM25TextView = findViewById(R.id.PM25_value_textView);
         PM1TextView = findViewById(R.id.PM1_value_textView);
         dateTextView = findViewById(R.id.lastUpdateDate_textView);
+        installationInfoTextView = findViewById(R.id.installation_address_textView);
         airViewModel = ViewModelProviders.of(this).get(ViewModel.class);
-        retrofitAPI = airViewModel.createRetrofitApi();
+        airViewModel.makeApiCallForInstallationInfo().observe(this, new Observer<Address>() {
+            @Override
+            public void onChanged(Address address) {
+                installationInfoTextView.setText(address.getStreet());
+            }
+        });
         airViewModel.getAllDataList().observe(this, new Observer<List<AirDataSample>>() {
             @Override
             public void onChanged(List<AirDataSample> airDataSamples) {
@@ -48,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                airViewModel.makeApiCallAndWriteToAirDatabase(retrofitAPI);
+                airViewModel.makeApiCallAndWriteToAirDatabase();
             }
         });
     }
