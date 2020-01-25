@@ -1,15 +1,13 @@
 package com.example.smogwawelski.Models.Entity;
 
-import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
-import com.example.smogwawelski.Models.POJO.Index;
-import com.example.smogwawelski.Models.POJO.Standard;
-import com.example.smogwawelski.Models.POJO.Value;
+import com.example.smogwawelski.Models.POJO.Measurements.Index;
+import com.example.smogwawelski.Models.POJO.Measurements.Standard;
+import com.example.smogwawelski.Models.POJO.Measurements.Value;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

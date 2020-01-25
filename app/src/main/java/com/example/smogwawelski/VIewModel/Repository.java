@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData;
 import com.example.smogwawelski.Database.AirDataDao;
 import com.example.smogwawelski.Database.AirDatabase;
 import com.example.smogwawelski.Models.Entity.AirDataSample;
-import com.example.smogwawelski.Models.POJO.AirInfo;
+import com.example.smogwawelski.Models.POJO.Measurements.AirInfo;
 import com.example.smogwawelski.RetrofitApi.RetrofitAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -85,7 +85,7 @@ public class Repository {
     }
 
     public void makeApiCallAndWriteToAirDatabase(RetrofitAPI retrofitAPI){
-        Call<AirInfo> call = retrofitAPI.getCurrentAirInfo();
+        Call<AirInfo> call = retrofitAPI.getCurrentAirInfo(50.062006,19.940984, -1);
         call.enqueue(new Callback<AirInfo>() {
             @Override
             public void onResponse(Call<AirInfo> call, Response<AirInfo> response) {

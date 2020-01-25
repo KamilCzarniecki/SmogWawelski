@@ -1,4 +1,4 @@
-package com.example.smogwawelski.Models.POJO;
+package com.example.smogwawelski.Models.POJO.Measurements;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

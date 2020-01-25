@@ -2,8 +2,7 @@ package com.example.smogwawelski.Models.Entity;
 
 import androidx.room.TypeConverter;
 
-import com.example.smogwawelski.Models.POJO.Index;
-import com.example.smogwawelski.Models.POJO.Value;
+import com.example.smogwawelski.Models.POJO.Measurements.Index;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

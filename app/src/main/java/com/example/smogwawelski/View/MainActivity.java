@@ -10,22 +10,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.smogwawelski.Models.Entity.AirDataSample;
-import com.example.smogwawelski.Models.POJO.AirInfo;
-import com.example.smogwawelski.Models.POJO.Value;
+import com.example.smogwawelski.Models.POJO.Measurements.Standard;
+import com.example.smogwawelski.Models.POJO.Measurements.Value;
 import com.example.smogwawelski.R;
 import com.example.smogwawelski.RetrofitApi.RetrofitAPI;
 import com.example.smogwawelski.VIewModel.ViewModel;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.util.List;
-import java.util.Vector;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     TextView dateTextView;
@@ -49,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         airViewModel.getAllDataList().observe(this, new Observer<List<AirDataSample>>() {
             @Override
             public void onChanged(List<AirDataSample> airDataSamples) {
-                readDataFromDbAndSetTextViews(airDataSamples);
+                handleEmittedDataAndSetTextViews(airDataSamples);
             }
         });
 
@@ -62,10 +53,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void readDataFromDbAndSetTextViews(List<AirDataSample> airDataSamples) {
+    public void handleEmittedDataAndSetTextViews(List<AirDataSample> airDataSamples) {
         for (AirDataSample airDataSample : airDataSamples) {
             if (airDataSample.isType()) {
                 List<Value> listValues = airDataSample.getValues();
+                List<Standard> listStandard = airDataSample.getStandards();
                 for (Value value : listValues) {
                     switch (value.getName()) {
                         case "PM10":
@@ -80,6 +72,18 @@ public class MainActivity extends AppCompatActivity {
                         default:
                             break;
                     }
+                }
+                    for (Standard standard : listStandard) {
+                        switch (standard.getPollutant()) {
+                            case "PM10":
+                                PM10TextView.append(" "+String.valueOf(standard.getPercent()+" %"));
+                                break;
+                            case "PM25":
+                                PM25TextView.append(" "+String.valueOf(standard.getPercent()+" %"));
+                                break;
+                            default:
+                                break;
+                        }
 
                 }
                 dateTextView.setText(airDataSample.getFromDateTime());

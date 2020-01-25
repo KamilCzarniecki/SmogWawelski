@@ -10,8 +10,6 @@ import com.example.smogwawelski.Models.Entity.AirDataSample;
 import com.example.smogwawelski.Models.Entity.IndexTypeConverter;
 import com.example.smogwawelski.Models.Entity.StandardTypeConverter;
 import com.example.smogwawelski.Models.Entity.ValueTypeConverter;
-import com.example.smogwawelski.Models.POJO.Standard;
-import com.example.smogwawelski.Models.POJO.Value;
 
 @androidx.room.Database(entities={AirDataSample.class}, version=1)
 @TypeConverters({ValueTypeConverter.class, StandardTypeConverter.class, IndexTypeConverter.class})

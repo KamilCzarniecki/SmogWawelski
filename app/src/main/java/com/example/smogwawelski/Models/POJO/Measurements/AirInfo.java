@@ -1,4 +1,4 @@
-package com.example.smogwawelski.Models.POJO;
+package com.example.smogwawelski.Models.POJO.Measurements;
 
 import com.example.smogwawelski.Models.Entity.AirDataSample;
 import com.google.gson.annotations.Expose;
