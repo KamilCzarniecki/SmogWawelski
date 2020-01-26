@@ -1,6 +1,8 @@
 package com.example.smogwawelski.VIewModel;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -38,8 +40,8 @@ public class ViewModel extends AndroidViewModel {
     }
 
 
-    public void makeApiCallAndWriteToAirDatabase() {
-        repository.makeApiCallAndWriteToAirDatabase();
+    public void makeApiCallAndWriteToAirDatabase(Context context, Activity activity) {
+        repository.makeApiCallAndWriteToAirDatabase(context, activity);
     }
     public LiveData<Address> makeApiCallForInstallationInfo(){
         return liveDataAddressInfo;

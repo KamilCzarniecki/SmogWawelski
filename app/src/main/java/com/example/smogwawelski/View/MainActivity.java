@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.smogwawelski.GPS.LocationProvider;
 import com.example.smogwawelski.Models.Entity.AirDataSample;
 import com.example.smogwawelski.Models.POJO.Installation.Address;
 import com.example.smogwawelski.Models.POJO.Measurements.Standard;
@@ -18,6 +19,7 @@ import com.example.smogwawelski.RetrofitApi.RetrofitAPI;
 import com.example.smogwawelski.VIewModel.ViewModel;
 
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     TextView dateTextView;
@@ -32,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        LocationProvider.requestPermission(this);
+        Map<String,Double> coordinates = LocationProvider.getCurrentLocation(this,this);
+        TextView testTextView = findViewById(R.id.textView);
+        testTextView.setText(String.valueOf(coordinates.get("Latitude")));
         Button refreshButton = findViewById(R.id.refresh_button);
         PM10TextView = findViewById(R.id.PM10_value_textView);
         PM25TextView = findViewById(R.id.PM25_value_textView);
@@ -56,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                airViewModel.makeApiCallAndWriteToAirDatabase();
+                airViewModel.makeApiCallAndWriteToAirDatabase(getApplicationContext(),MainActivity.this);
             }
         });
     }

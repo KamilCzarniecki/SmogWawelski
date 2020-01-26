@@ -14,7 +14,7 @@ public interface RetrofitAPI {
     @Headers({"apikey: U8RQyB3olir7A61X8Jq19dLISVI8R0oT", "Accept: application/json"})
     @GET("v2/measurements/nearest")
     Call<AirInfo> getCurrentAirInfo(@Query("lat") double latitude,@Query("lng") double longitude,@Query("maxDistanceKM") double maxDistance);
-
+    // It is list of Installation info because in JSON there is one element list provided o.O....
     @Headers({"apikey: U8RQyB3olir7A61X8Jq19dLISVI8R0oT", "Accept: application/json"})
     @GET("v2/installations/nearest")
     Call<List<InstallationInfo>> getInstallationInfo(@Query("lat") double latitude, @Query("lng") double longitude, @Query("maxDistanceKM") double maxDistance, @Query("maxResults") int maxResults);

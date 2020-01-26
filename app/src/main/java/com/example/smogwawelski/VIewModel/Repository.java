@@ -1,6 +1,8 @@
 package com.example.smogwawelski.VIewModel;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
@@ -8,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.smogwawelski.Database.AirDataDao;
 import com.example.smogwawelski.Database.AirDatabase;
+import com.example.smogwawelski.GPS.LocationProvider;
 import com.example.smogwawelski.Models.Entity.AirDataSample;
 import com.example.smogwawelski.Models.POJO.Installation.Address;
 import com.example.smogwawelski.Models.POJO.Installation.InstallationInfo;
@@ -19,6 +22,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,7 +87,9 @@ public class Repository {
 
 
 
-    public void makeApiCallAndWriteToAirDatabase() {
+    public void makeApiCallAndWriteToAirDatabase(Context context, Activity activity) {
+
+        Map<String,Double> coordinates = LocationProvider.getCurrentLocation(context, activity);
         Call<AirInfo> airInfoCall = retrofitAPI.getCurrentAirInfo(50.062006, 19.940984, -1);
         airInfoCall.enqueue(new Callback<AirInfo>() {
             @Override
