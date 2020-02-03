@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
     TextView PM1TextView;
     TextView testTextView;
     GPSLocationProvider GPSLocationProvider;
-    int PERMISSION_ID = 44;
-    FusedLocationProviderClient mFusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         dateTextView = findViewById(R.id.lastUpdateDate_textView);
         installationInfoTextView = findViewById(R.id.installation_address_textView);
         airViewModel = ViewModelProviders.of(this).get(ViewModel.class);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         GPSLocationProvider = new GPSLocationProvider(MainActivity.this,getApplicationContext(),airViewModel,testTextView);
 
 
@@ -86,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestNewLocationData();
+                GPSLocationProvider.requestNewLocationData();
 
             }
         });
@@ -135,109 +133,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        if (checkPermissions()) {
-            getLastLocation();
+        if (GPSLocationProvider.checkPermissions()) {
+            GPSLocationProvider.requestNewLocationData();
         }
 
     }
-    @SuppressLint("MissingPermission")
-    public void getLastLocation(){
-        if (checkPermissions()) {
-            if (isLocationEnabled()) {
-                mFusedLocationClient.getLastLocation().addOnCompleteListener(
-                        new OnCompleteListener<Location>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Location> task) {
-                                Location location = task.getResult();
-                                if (location == null) {
-                                    requestNewLocationData();
-                                } else {
 
-                                    final Map<String, Double> coordinates = new HashMap<>();
-
-                                    coordinates.put("Latitude", (Double) location.getLatitude());
-                                    coordinates.put("Longitude", (Double) location.getLongitude());
-                                    airViewModel.makeApiCallForInstallationInfo(coordinates);
-                                    airViewModel.makeApiCallAndWriteToAirDatabase(coordinates);
-                                    testTextView.setText(String.valueOf(location.getLatitude()));
-                                }
-                            }
-                        }
-                );
-            } else {
-                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        } else {
-            requestPermissions();
-        }
-    }
-
-
-    @SuppressLint("MissingPermission")
-    public void requestNewLocationData(){
-
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(0);
-        mLocationRequest.setFastestInterval(0);
-        mLocationRequest.setNumUpdates(1);
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mFusedLocationClient.requestLocationUpdates(
-                mLocationRequest, mLocationCallback,
-                Looper.myLooper()
-        );
-
-    }
-
-    public LocationCallback mLocationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            Location mLastLocation = locationResult.getLastLocation();
-            Map<String, Double> coordinates = new HashMap<>();
-
-            coordinates.put("Latitude", (Double) mLastLocation.getLatitude());
-            coordinates.put("Longitude", (Double) mLastLocation.getLongitude());
-            airViewModel.makeApiCallForInstallationInfo(coordinates);
-            airViewModel.makeApiCallAndWriteToAirDatabase(coordinates);
-            testTextView.setText(String.valueOf(mLastLocation.getLatitude()));
-        }
-    };
-
-    public boolean checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        return false;
-    }
-
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-                PERMISSION_ID
-        );
-    }
-
-    private boolean isLocationEnabled() {
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-                LocationManager.NETWORK_PROVIDER
-        );
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_ID) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
-            }
-        }
-    }
 }
 
 

@@ -121,7 +121,7 @@ public class GPSLocationProvider extends AppCompatActivity {
         return false;
     }
 
-    private void requestPermissions() {
+   public void requestPermissions() {
         ActivityCompat.requestPermissions(
                 activity,
                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
@@ -129,7 +129,7 @@ public class GPSLocationProvider extends AppCompatActivity {
         );
     }
 
-    private boolean isLocationEnabled() {
+    public boolean isLocationEnabled() {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
                 LocationManager.NETWORK_PROVIDER
