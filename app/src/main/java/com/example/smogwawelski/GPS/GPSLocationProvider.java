@@ -32,8 +32,8 @@ import org.w3c.dom.Text;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GPSLocationProvider extends AppCompatActivity {
-    int PERMISSION_ID = 44;
+public class GPSLocationProvider {
+    public static final int PERMISSION_ID = 44;
     FusedLocationProviderClient mFusedLocationClient;
     ViewModel airViewModel;
     TextView testTextView;
@@ -74,7 +74,7 @@ public class GPSLocationProvider extends AppCompatActivity {
             } else {
                 Toast.makeText(context, "Turn on location", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
+                activity.startActivity(intent);
             }
         } else {
             requestPermissions();
@@ -136,13 +136,4 @@ public class GPSLocationProvider extends AppCompatActivity {
         );
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_ID) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
-            }
-        }
-    }
 }
