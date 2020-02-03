@@ -1,8 +1,6 @@
 package com.example.smogwawelski.VIewModel;
 
-import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
@@ -10,15 +8,12 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.smogwawelski.Database.AirDataDao;
 import com.example.smogwawelski.Database.AirDatabase;
-import com.example.smogwawelski.GPS.LocationProvider;
 import com.example.smogwawelski.Models.Entity.AirDataSample;
 import com.example.smogwawelski.Models.POJO.Installation.Address;
 import com.example.smogwawelski.Models.POJO.Installation.InstallationInfo;
 import com.example.smogwawelski.Models.POJO.Measurements.AirInfo;
 import com.example.smogwawelski.RetrofitApi.RetrofitAPI;
 import com.example.smogwawelski.RetrofitApi.RetrofitService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +22,18 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Repository {
     private AirDataDao airDataDao;
     private LiveData<List<AirDataSample>> allDataList;
     private RetrofitAPI retrofitAPI;
+
+    public MutableLiveData<Address> getLiveDataAddressInfo() {
+        return liveDataAddressInfo;
+    }
+
+    private MutableLiveData<Address> liveDataAddressInfo = new MutableLiveData<>();
+
     public Repository(Application application) {
         AirDatabase airDatabase = AirDatabase.getInstance(application);
         airDataDao = airDatabase.airDataDao();
@@ -86,11 +86,10 @@ public class Repository {
     }
 
 
+    public void makeApiCallAndWriteToAirDatabase(Map<String, Double> coordinates) {
 
-    public void makeApiCallAndWriteToAirDatabase(Context context, Activity activity) {
 
-        Map<String,Double> coordinates = LocationProvider.getCurrentLocation(context, activity);
-        Call<AirInfo> airInfoCall = retrofitAPI.getCurrentAirInfo(50.062006, 19.940984, -1);
+        Call<AirInfo> airInfoCall = retrofitAPI.getCurrentAirInfo((double) coordinates.get("Latitude"), (double) coordinates.get("Longitude"), -1);
         airInfoCall.enqueue(new Callback<AirInfo>() {
             @Override
             public void onResponse(Call<AirInfo> call, Response<AirInfo> response) {
@@ -113,9 +112,8 @@ public class Repository {
         });
     }
 
-    public MutableLiveData<Address> makeApiCallForInstallationInfo() {
-        final MutableLiveData<Address> liveDataAddressInfo = new MutableLiveData<>();
-        Call<List<InstallationInfo>> installationInfoCall = retrofitAPI.getInstallationInfo(50.062006, 19.940984, -1, 1);
+    public void makeApiCallForInstallationInfo(Map<String, Double> coordinates) {
+        Call<List<InstallationInfo>> installationInfoCall = retrofitAPI.getInstallationInfo((double) coordinates.get("Latitude"), (double) coordinates.get("Longitude"), -1, 1);
         installationInfoCall.enqueue(new Callback<List<InstallationInfo>>() {
             @Override
             public void onResponse(Call<List<InstallationInfo>> call, Response<List<InstallationInfo>> response) {
@@ -131,7 +129,6 @@ public class Repository {
             }
 
         });
-        return liveDataAddressInfo;
 
     }
 }

@@ -13,18 +13,20 @@ import com.example.smogwawelski.Models.Entity.AirDataSample;
 import com.example.smogwawelski.Models.POJO.Installation.Address;
 import com.example.smogwawelski.RetrofitApi.RetrofitAPI;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ViewModel extends AndroidViewModel {
     LiveData<List<AirDataSample>> allDataList;
     Repository repository;
-    LiveData<Address> liveDataAddressInfo;
+    MutableLiveData<Address> liveDataAddressInfo;
 
     public ViewModel(@NonNull Application application) {
         super(application);
         repository = new Repository(application);
         allDataList = repository.getAllDataList();
-        liveDataAddressInfo=repository.makeApiCallForInstallationInfo();
+        liveDataAddressInfo = repository.getLiveDataAddressInfo();
     }
 
     public void insertAllData(List<AirDataSample> dataList) {
@@ -39,11 +41,15 @@ public class ViewModel extends AndroidViewModel {
         return allDataList;
     }
 
-
-    public void makeApiCallAndWriteToAirDatabase(Context context, Activity activity) {
-        repository.makeApiCallAndWriteToAirDatabase(context, activity);
-    }
-    public LiveData<Address> makeApiCallForInstallationInfo(){
+    public LiveData<Address> getLiveDataAddressInfo() {
         return liveDataAddressInfo;
+    }
+
+    public void makeApiCallAndWriteToAirDatabase(Map<String,Double> coordinates) {
+        repository.makeApiCallAndWriteToAirDatabase(coordinates);
+    }
+
+    public void makeApiCallForInstallationInfo(Map<String,Double> coordinates) {
+        repository.makeApiCallForInstallationInfo(coordinates);
     }
 }
