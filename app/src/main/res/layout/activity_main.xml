@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="70dp"
+        android:layout_marginEnd="80dp"
         android:text="TextView"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,22 +56,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="70dp"
+        android:layout_marginEnd="80dp"
         android:text="TextView"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PM10_value_textView" />
 
     <TextView
+        android:id="@+id/PM25_percent_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="TextView"
+        android:textSize="20dp"
+        app:layout_constraintStart_toEndOf="@+id/PM25_value_textView"
+        app:layout_constraintTop_toTopOf="@+id/PM25_value_textView" />
+
+    <TextView
+        android:id="@+id/PM10_percent_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="TextView"
+        android:textSize="20dp"
+        app:layout_constraintStart_toEndOf="@+id/PM10_value_textView"
+        app:layout_constraintTop_toTopOf="@+id/PM10_value_textView" />
+
+    <TextView
         android:id="@+id/PM1_value_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="70dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="80dp"
         android:text="TextView"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PM25_value_textView"  />
+        app:layout_constraintTop_toBottomOf="@+id/PM25_value_textView" />
 
     <TextView
         android:id="@+id/lastUpdateDate_textView"

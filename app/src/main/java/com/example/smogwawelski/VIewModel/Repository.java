@@ -2,6 +2,7 @@ package com.example.smogwawelski.VIewModel;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -19,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,43 +50,14 @@ public class Repository {
         return allDataList;
     }
 
-    public void insertAllData(List<AirDataSample> dataList) {
-        new InsertAllDataAsyncTask(airDataDao).execute(dataList);
+    public Completable insertAllData(List<AirDataSample> dataList) {
+        return Completable.fromAction(()->airDataDao.insertAllData(dataList));
 
     }
 
-    public void deleteAllData() {
-        new DeleteAllDataAsyncTask(airDataDao).execute();
+    public Completable deleteAllData() {
+            return Completable.fromAction(()->airDataDao.deleteAllData());
 
-    }
-
-    private static class InsertAllDataAsyncTask extends AsyncTask<List<AirDataSample>, Void, Void> {
-        private AirDataDao airDataDao;
-
-        private InsertAllDataAsyncTask(AirDataDao airDataDao) {
-            this.airDataDao = airDataDao;
-        }
-
-        @Override
-        protected Void doInBackground(List<AirDataSample>... lists) {
-            airDataDao.insertAllData(lists[0]);
-            return null;
-        }
-    }
-
-    private static class DeleteAllDataAsyncTask extends AsyncTask<Void, Void, Void> {
-        private AirDataDao airDataDao;
-
-        private DeleteAllDataAsyncTask(AirDataDao airDataDao) {
-            this.airDataDao = airDataDao;
-        }
-
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            airDataDao.deleteAllData();
-            return null;
-        }
     }
 
 
@@ -100,9 +75,15 @@ public class Repository {
                 AirDataSample airCurrentInfoSample = response.body().getCurrent();
                 airCurrentInfoSample.setType(AirDataSample.TYPE_CURRENT);
                 combinedDataList = response.body().getHistory();
-                combinedDataList.add(response.body().getCurrent());
-                deleteAllData();
-                insertAllData((List<AirDataSample>) combinedDataList);
+                combinedDataList.add(airCurrentInfoSample);
+                deleteAllData()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe();
+                insertAllData((List<AirDataSample>) combinedDataList)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
             }
 
             @Override
