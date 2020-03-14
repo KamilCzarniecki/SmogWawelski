@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.rxjava3.core.Completable;
+
 public class ViewModel extends AndroidViewModel {
     LiveData<List<AirDataSample>> allDataList;
     Repository repository;
@@ -45,8 +47,8 @@ public class ViewModel extends AndroidViewModel {
         return liveDataAddressInfo;
     }
 
-    public void makeApiCallAndWriteToAirDatabase(Map<String,Double> coordinates) {
-        repository.makeApiCallAndWriteToAirDatabase(coordinates);
+    public Completable makeApiCallAndWriteToAirDatabase(Map<String,Double> coordinates) {
+        return repository.makeApiCallAndWriteToAirDatabase(coordinates);
     }
 
     public void makeApiCallForInstallationInfo(Map<String,Double> coordinates) {

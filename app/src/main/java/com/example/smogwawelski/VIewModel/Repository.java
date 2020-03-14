@@ -22,6 +22,8 @@ import java.util.Map;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,50 +53,79 @@ public class Repository {
     }
 
     public Completable insertAllData(List<AirDataSample> dataList) {
-        return Completable.fromAction(()->airDataDao.insertAllData(dataList));
-
+        return Completable.fromAction(() -> airDataDao.insertAllData(dataList));
     }
 
     public Completable deleteAllData() {
-            return Completable.fromAction(()->airDataDao.deleteAllData());
-
+        return Completable.fromAction(() -> airDataDao.deleteAllData());
     }
 
 
-    public void makeApiCallAndWriteToAirDatabase(Map<String, Double> coordinates) {
+    public Completable makeApiCallAndWriteToAirDatabase(Map<String, Double> coordinates) {
+        return Observable.<Call<AirInfo>>create(emitter -> {
+            Call<AirInfo> airInfoCall = retrofitAPI.getCurrentAirInfo(
+                    coordinates.get("Latitude"),
+                    coordinates.get("Longitude"),
+                    -1
+            );
+            emitter.onNext(airInfoCall);
+            emitter.onComplete();
+        })
+                .observeOn(Schedulers.io())
+                .map(call -> call.execute())
+                .map(response -> convert(response))
+                .flatMap(airDataSamples -> Completable
+                        .concatArray(
+                                deleteAllData(),
+                                insertAllData(airDataSamples)
+                        )
+                        .toObservable()
+                ).ignoreElements();
 
 
-        Call<AirInfo> airInfoCall = retrofitAPI.getCurrentAirInfo((double) coordinates.get("Latitude"), (double) coordinates.get("Longitude"), -1);
-        airInfoCall.enqueue(new Callback<AirInfo>() {
-            @Override
-            public void onResponse(Call<AirInfo> call, Response<AirInfo> response) {
-                if (!response.isSuccessful()) {
-                    return;
-                }
-                List combinedDataList = new ArrayList();
-                AirDataSample airCurrentInfoSample = response.body().getCurrent();
-                airCurrentInfoSample.setType(AirDataSample.TYPE_CURRENT);
-                combinedDataList = response.body().getHistory();
-                combinedDataList.add(airCurrentInfoSample);
-                deleteAllData()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe();
-                insertAllData((List<AirDataSample>) combinedDataList)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe();
-            }
+//        Response<AirInfo> execute = airInfoCall.execute();
+//
+//        airInfoCall.enqueue(new Callback<AirInfo>() {
+//            @Override
+//            public void onResponse(Call<AirInfo> call, Response<AirInfo> response) {
+//                if (!response.isSuccessful()) {
+//                    return;
+//                }
+//                List combinedDataList = new ArrayList();
+//                AirDataSample airCurrentInfoSample = response.body().getCurrent();
+//                airCurrentInfoSample.setType(AirDataSample.TYPE_CURRENT);
+//                combinedDataList = response.body().getHistory();
+//                combinedDataList.add(airCurrentInfoSample);
+//
+//                deleteAllData()
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe();
+//
+//                insertAllData((List<AirDataSample>) combinedDataList)
+//                        .subscribeOn(Schedulers.computation())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<AirInfo> call, Throwable t) {
+//
+//            }
+//        });
+    }
 
-            @Override
-            public void onFailure(Call<AirInfo> call, Throwable t) {
-
-            }
-        });
+    private List<AirDataSample> convert(Response<AirInfo> response) {
+        List<AirDataSample> combinedDataList = new ArrayList<>();
+        AirDataSample airCurrentInfoSample = response.body().getCurrent();
+        airCurrentInfoSample.setType(AirDataSample.TYPE_CURRENT);
+        combinedDataList = response.body().getHistory();
+        combinedDataList.add(airCurrentInfoSample);
+        return combinedDataList;
     }
 
     public void makeApiCallForInstallationInfo(Map<String, Double> coordinates) {
-        Call<List<InstallationInfo>> installationInfoCall = retrofitAPI.getInstallationInfo((double) coordinates.get("Latitude"), (double) coordinates.get("Longitude"), -1, 1);
+        Call<List<InstallationInfo>> installationInfoCall = retrofitAPI.getInstallationInfo(coordinates.get("Latitude"), coordinates.get("Longitude"), -1, 1);
         installationInfoCall.enqueue(new Callback<List<InstallationInfo>>() {
             @Override
             public void onResponse(Call<List<InstallationInfo>> call, Response<List<InstallationInfo>> response) {

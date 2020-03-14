@@ -37,13 +37,12 @@ public class GPSLocationProvider {
     FusedLocationProviderClient mFusedLocationClient;
     ViewModel airViewModel;
     TextView testTextView;
-    Activity activity;
+
     Context context;
-    public GPSLocationProvider(Activity activity, Context context, ViewModel airViewModel, TextView textView){
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
+    public GPSLocationProvider(Context context, ViewModel airViewModel, TextView textView){
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context.getApplicationContext());
         this.airViewModel=airViewModel;
         this.testTextView=textView;
-        this.activity=activity;
         this.context = context;
     }
 
@@ -65,7 +64,7 @@ public class GPSLocationProvider {
                                     coordinates.put("Latitude", (Double) location.getLatitude());
                                     coordinates.put("Longitude", (Double) location.getLongitude());
                                     airViewModel.makeApiCallForInstallationInfo(coordinates);
-                                    airViewModel.makeApiCallAndWriteToAirDatabase(coordinates);
+                                    airViewModel.makeApiCallAndWriteToAirDatabase(coordinates).subscribe();
                                     testTextView.setText(String.valueOf(location.getLatitude()));
                                 }
                             }

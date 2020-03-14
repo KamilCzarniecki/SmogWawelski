@@ -11,15 +11,20 @@ import com.example.smogwawelski.Models.Entity.IndexTypeConverter;
 import com.example.smogwawelski.Models.Entity.StandardTypeConverter;
 import com.example.smogwawelski.Models.Entity.ValueTypeConverter;
 
-@androidx.room.Database(entities={AirDataSample.class}, version=1)
+@androidx.room.Database(entities = {AirDataSample.class}, version = 1)
 @TypeConverters({ValueTypeConverter.class, StandardTypeConverter.class, IndexTypeConverter.class})
 public abstract class AirDatabase extends RoomDatabase {
     private static AirDatabase instance;
+
     public abstract AirDataDao airDataDao();
-    public static synchronized AirDatabase getInstance(Context context) {
+
+    public static AirDatabase getInstance(Context context) {
         if (instance == null) {
-            instance = Room.databaseBuilder(context.getApplicationContext(),
-                    AirDatabase.class, "AirData_database")
+            instance = Room.databaseBuilder(
+                    context.getApplicationContext(),
+                    AirDatabase.class,
+                    "AirData_database"
+            )
                     .fallbackToDestructiveMigration()
                     .build();
         }
